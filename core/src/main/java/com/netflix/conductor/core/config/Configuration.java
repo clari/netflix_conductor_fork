@@ -12,6 +12,7 @@
  */
 package com.netflix.conductor.core.config;
 
+import com.google.common.base.Strings;
 import com.google.inject.AbstractModule;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +131,20 @@ public interface Configuration {
 
     String EVENT_QUEUE_POLL_SCHEDULER_THREAD_COUNT_PROPERTY_NAME = "workflow.event.queue.scheduler.poll.thread.count";
 
+    String WORKFLOW_ARCHIVAL_TYPE_NAME = "workflow.archival.type";
+    ArchivalType WORKFLOW_ARCHIVAL_TYPE_VALUE = ArchivalType.ELASTICSEARCH;
+
+    String S3_ARCHIVAL_BUCKET_URI_NAME = "workflow.s3.archive.uri";
+    String S3_ARCHIVAL_BUCKET_URI_VALUE = "";
+
+    String ARCHIVE_UNSUCCESSFUL_ONLY_NAME = "workflow.archive.unsuccessful.only";
+    boolean ARCHIVE_UNSUCCESSFUL_ONLY_VALUE = false;
+
     //TODO add constants for input/output external payload related properties.
+
+    enum ArchivalType {
+        ELASTICSEARCH, S3
+    }
 
     default DB getDB() {
         return DB.valueOf(getDBString());
@@ -150,6 +164,32 @@ public interface Configuration {
 
     default boolean ignoreLockingExceptions() {
         return getBooleanProperty(IGNORE_LOCKING_EXCEPTIONS_PROPERTY_NAME, IGNORE_LOCKING_EXCEPTIONS_DEFAULT_VALUE);
+    }
+
+    /**
+     * @return workflow arhival type of S3 or Elasticsearch. Defaults to Elasticsearch
+     */
+    default ArchivalType getWorkflowArchivalType() {
+        ArchivalType workflowArchivalType = WORKFLOW_ARCHIVAL_TYPE_VALUE;
+        String archivalTypeConfig = getProperty(WORKFLOW_ARCHIVAL_TYPE_NAME, "");
+        if (!Strings.isNullOrEmpty(archivalTypeConfig)) {
+            workflowArchivalType = ArchivalType.valueOf(archivalTypeConfig.toUpperCase());
+        }
+        return workflowArchivalType;
+    }
+
+    /**
+     * @return if true(not default), archives only unsuccessful workflows
+     */
+    default boolean isArchiveUnsuccessfulOnlyEnabled() {
+        return getBooleanProperty(ARCHIVE_UNSUCCESSFUL_ONLY_NAME, ARCHIVE_UNSUCCESSFUL_ONLY_VALUE);
+    }
+
+    /**
+     * @return S3 bucket URI
+     */
+    default String getS3ArchivalBucketURI() {
+        return getProperty(S3_ARCHIVAL_BUCKET_URI_NAME, S3_ARCHIVAL_BUCKET_URI_VALUE);
     }
 
     /**
