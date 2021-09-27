@@ -131,20 +131,20 @@ public interface Configuration {
 
     String EVENT_QUEUE_POLL_SCHEDULER_THREAD_COUNT_PROPERTY_NAME = "workflow.event.queue.scheduler.poll.thread.count";
 
-    String WORKFLOW_ARCHIVAL_TYPE_NAME = "workflow.archival.type";
-    ArchivalType WORKFLOW_ARCHIVAL_TYPE_VALUE = ArchivalType.ELASTICSEARCH;
+    String WORKFLOW_ARCHIVAL_TYPE_PROPERTY_NAME = "workflow.archival.type";
+    ArchivalType WORKFLOW_ARCHIVAL_TYPE_DEFAULT_VALUE = ArchivalType.ELASTICSEARCH;
 
-    String S3_ARCHIVAL_BUCKET_URI_NAME = "workflow.s3.archive.uri";
-    String S3_ARCHIVAL_BUCKET_URI_VALUE = "";
+    String S3_ARCHIVAL_BUCKET_URI_PROPERTY_NAME = "workflow.s3.archive.uri";
+    String S3_ARCHIVAL_BUCKET_URI_DEFAULT_VALUE = "";
 
-    String ARCHIVE_UNSUCCESSFUL_ONLY_NAME = "workflow.archive.unsuccessful.only";
-    boolean ARCHIVE_UNSUCCESSFUL_ONLY_VALUE = false;
-
-    //TODO add constants for input/output external payload related properties.
+    String ARCHIVE_UNSUCCESSFUL_ONLY_PROPERTY_NAME = "workflow.archive.unsuccessful.only";
+    boolean ARCHIVE_UNSUCCESSFUL_ONLY_DEFAULT_VALUE = false;
 
     enum ArchivalType {
         ELASTICSEARCH, S3
     }
+
+    //TODO add constants for input/output external payload related properties.
 
     default DB getDB() {
         return DB.valueOf(getDBString());
@@ -170,8 +170,8 @@ public interface Configuration {
      * @return workflow arhival type of S3 or Elasticsearch. Defaults to Elasticsearch
      */
     default ArchivalType getWorkflowArchivalType() {
-        ArchivalType workflowArchivalType = WORKFLOW_ARCHIVAL_TYPE_VALUE;
-        String archivalTypeConfig = getProperty(WORKFLOW_ARCHIVAL_TYPE_NAME, "");
+        ArchivalType workflowArchivalType = WORKFLOW_ARCHIVAL_TYPE_DEFAULT_VALUE;
+        String archivalTypeConfig = getProperty(WORKFLOW_ARCHIVAL_TYPE_PROPERTY_NAME, "");
         if (!Strings.isNullOrEmpty(archivalTypeConfig)) {
             workflowArchivalType = ArchivalType.valueOf(archivalTypeConfig.toUpperCase());
         }
@@ -182,14 +182,14 @@ public interface Configuration {
      * @return if true(not default), archives only unsuccessful workflows
      */
     default boolean isArchiveUnsuccessfulOnlyEnabled() {
-        return getBooleanProperty(ARCHIVE_UNSUCCESSFUL_ONLY_NAME, ARCHIVE_UNSUCCESSFUL_ONLY_VALUE);
+        return getBooleanProperty(ARCHIVE_UNSUCCESSFUL_ONLY_PROPERTY_NAME, ARCHIVE_UNSUCCESSFUL_ONLY_DEFAULT_VALUE);
     }
 
     /**
      * @return S3 bucket URI
      */
     default String getS3ArchivalBucketURI() {
-        return getProperty(S3_ARCHIVAL_BUCKET_URI_NAME, S3_ARCHIVAL_BUCKET_URI_VALUE);
+        return getProperty(S3_ARCHIVAL_BUCKET_URI_PROPERTY_NAME, S3_ARCHIVAL_BUCKET_URI_DEFAULT_VALUE);
     }
 
     /**

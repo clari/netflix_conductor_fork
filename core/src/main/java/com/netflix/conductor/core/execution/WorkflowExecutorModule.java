@@ -30,5 +30,6 @@ public class WorkflowExecutorModule extends AbstractModule {
         bind(TaskService.class).to(TaskServiceImpl.class);
         bind(EventService.class).to(EventServiceImpl.class);
         bind(MetadataService.class).to(MetadataServiceImpl.class);
+
     }
 }

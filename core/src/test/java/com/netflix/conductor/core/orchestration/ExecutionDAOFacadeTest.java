@@ -36,6 +36,7 @@ import com.netflix.conductor.common.utils.JsonMapperProvider;
 import com.netflix.conductor.core.config.Configuration;
 import com.netflix.conductor.core.execution.TestConfiguration;
 import com.netflix.conductor.core.execution.TestDeciderService;
+import com.netflix.conductor.core.execution.WorkflowArchiver;
 import com.netflix.conductor.dao.ExecutionDAO;
 import com.netflix.conductor.dao.IndexDAO;
 import com.netflix.conductor.dao.PollDataDAO;
@@ -57,6 +58,7 @@ public class ExecutionDAOFacadeTest {
     private ExecutionDAOFacade executionDAOFacade;
     private RateLimitingDAO rateLimitingDao;
     private PollDataDAO pollDataDAO;
+    private WorkflowArchiver workflowArchiver;
 
     @Before
     public void setUp() {
@@ -66,9 +68,10 @@ public class ExecutionDAOFacadeTest {
         rateLimitingDao = mock(RateLimitingDAO.class);
         pollDataDAO = mock(PollDataDAO.class);
         objectMapper = new JsonMapperProvider().get();
+        workflowArchiver = mock(WorkflowArchiver.class);
         Configuration configuration = new TestConfiguration();
         executionDAOFacade = new ExecutionDAOFacade(executionDAO, queueDAO, indexDAO, rateLimitingDao, pollDataDAO,
-            objectMapper, configuration);
+            objectMapper, configuration, workflowArchiver);
     }
 
     @Test

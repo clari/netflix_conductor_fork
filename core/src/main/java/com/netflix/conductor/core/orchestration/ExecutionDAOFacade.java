@@ -15,8 +15,6 @@ package com.netflix.conductor.core.orchestration;
 import static com.netflix.conductor.core.execution.WorkflowExecutor.DECIDER_QUEUE;
 import static com.netflix.conductor.core.execution.WorkflowExecutor.isSystemTask;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.conductor.common.metadata.events.EventExecution;
@@ -30,8 +28,7 @@ import com.netflix.conductor.core.config.Configuration;
 import com.netflix.conductor.core.events.queue.Message;
 import com.netflix.conductor.core.execution.ApplicationException;
 import com.netflix.conductor.core.execution.ApplicationException.Code;
-import com.netflix.conductor.core.execution.ElasticsearchWorkflowArchival;
-import com.netflix.conductor.core.execution.S3WorkflowArchival;
+import com.netflix.conductor.core.execution.WorkflowArchiver;
 import com.netflix.conductor.dao.ExecutionDAO;
 import com.netflix.conductor.dao.IndexDAO;
 import com.netflix.conductor.dao.PollDataDAO;
@@ -70,11 +67,11 @@ public class ExecutionDAOFacade {
     private final Configuration config;
 
     private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
-    private final AmazonS3 s3Client;
+    private final WorkflowArchiver workflowArchiver;
 
     @Inject
     public ExecutionDAOFacade(ExecutionDAO executionDAO, QueueDAO queueDAO, IndexDAO indexDAO,
-        RateLimitingDAO rateLimitingDao, PollDataDAO pollDataDAO, ObjectMapper objectMapper, Configuration config) {
+                              RateLimitingDAO rateLimitingDao, PollDataDAO pollDataDAO, ObjectMapper objectMapper, Configuration config, WorkflowArchiver workflowArchiver) {
         this.executionDAO = executionDAO;
         this.queueDAO = queueDAO;
         this.indexDAO = indexDAO;
@@ -88,9 +85,7 @@ public class ExecutionDAOFacade {
             Monitors.recordDiscardedIndexingCount("delayQueue");
         });
         this.scheduledThreadPoolExecutor.setRemoveOnCancelPolicy(true);
-        this.s3Client = AmazonS3ClientBuilder.standard()
-                .withRegion(config.getRegion())
-                .build();
+        this.workflowArchiver = workflowArchiver;
     }
 
     @PreDestroy
@@ -279,12 +274,8 @@ public class ExecutionDAOFacade {
                 // Only allow archival if workflow is in terminal state
                 // DO NOT archive async, since if archival errors out, workflow data will be lost
                 // Only archive unsuccessful workflows if enabled
-                if (!((config.isArchiveUnsuccessfulOnlyEnabled() == workflow.getStatus().isSuccessful()) && config.isArchiveUnsuccessfulOnlyEnabled())) {
-                    if (config.getWorkflowArchivalType().equals(Configuration.ArchivalType.S3)) {
-                        new S3WorkflowArchival().archiveWorkflow(workflow, config, indexDAO, executionDAO, objectMapper, s3Client);
-                    } else {
-                        new ElasticsearchWorkflowArchival().archiveWorkflow(workflow, config, indexDAO, executionDAO, objectMapper, null);
-                    }
+                if (!config.isArchiveUnsuccessfulOnlyEnabled() || !workflow.getStatus().isSuccessful()) {
+                    workflowArchiver.archiveWorkflow(workflow);
                 }
             } else {
                 throw new ApplicationException(Code.INVALID_INPUT, String.format("Cannot archive workflow: %s with status: %s",

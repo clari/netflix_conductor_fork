@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 Netflix, Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.netflix.conductor.core.execution;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,33 +27,38 @@ import org.slf4j.LoggerFactory;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
+
+import javax.inject.Inject;
+
 public class S3WorkflowArchival implements WorkflowArchiver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(S3WorkflowArchival.class);
 
-    @Override
-    public void archiveWorkflow(Workflow workflow, Configuration config, IndexDAO indexDAO, ExecutionDAO executionDAO, ObjectMapper objectMapper, AmazonS3 s3Client) {
+    private final AmazonS3 s3Client;
+    private final ObjectMapper objectMapper;
+    private String bucketURI;
 
-        String bucketName = config.getS3ArchivalBucketURI();
-        String fileName = workflow.getWorkflowName() + ".json";
+    @Inject
+    public S3WorkflowArchival(AmazonS3 s3Client, ObjectMapper objectMapper, String bucketURI) {
+        this.s3Client = s3Client;
+        this.objectMapper = objectMapper;
+        this.bucketURI = bucketURI;
+    }
+
+    @Override
+    public void archiveWorkflow(Workflow workflow) {
+
+        String fileName = workflow.getWorkflowId() + ".json";
+        String filePathPrefix = workflow.getWorkflowId().split("-")[0];
+        bucketURI = bucketURI.charAt(bucketURI.length() - 1) == '/' ? bucketURI + filePathPrefix: bucketURI + '/' + filePathPrefix;
 
         try {
-            Preconditions.checkArgument(StringUtils.isNotBlank(bucketName), "S3 bucket URI cannot be blank");
+            Preconditions.checkArgument(StringUtils.isNotBlank(bucketURI), "S3 bucket URI cannot be blank");
             // Upload workflow as a json file to s3
-            s3Client.putObject(bucketName, fileName, objectMapper.writeValueAsString(workflow));
-            LOGGER.info("Successfully archived workflow {} to S3 bucket {} as file {}", workflow.getWorkflowId(), bucketName, fileName);
-        }  catch (AmazonServiceException e) {
-            // The call was transmitted successfully, but Amazon S3 couldn't process it, so it returned an error response.
-            String errorMsg = String.format("S3 server exception for workflow: %s", workflow.getWorkflowId());
-            LOGGER.error(errorMsg, e);
-        } catch (SdkClientException e) {
-            // Amazon S3 couldn't be contacted for a response, or the client couldn't parse the response from Amazon S3.
-            String errorMsg = String.format("S3 client exception for workflow: %s", workflow.getWorkflowId());
-            LOGGER.error(errorMsg, e);
+            s3Client.putObject(bucketURI, fileName, objectMapper.writeValueAsString(workflow));
+            LOGGER.info("Successfully archived workflow {} to S3 bucket {} as file {}", workflow.getWorkflowId(), bucketURI, fileName);
         } catch (Exception e) {
-            // All other errors
-            String errorMsg = String.format("Error archiving workflow: %s to S3", workflow.getWorkflowId());
-            LOGGER.error(errorMsg, e);
+            throw new RuntimeException(e);
         }
 
     }
