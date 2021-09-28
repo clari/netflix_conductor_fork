@@ -44,7 +44,8 @@ public class WorkflowArchiverProvider implements Provider<WorkflowArchiver> {
                     .withRegion(config.getRegion())
                     .build();
             String bucketURI = config.getS3ArchivalBucketURI();
-            return new S3WorkflowArchival(s3Client, objectMapper, bucketURI);
+            int prefixValue = config.getS3ArchivalBucketURIPrefix();
+            return new S3WorkflowArchival(s3Client, objectMapper, bucketURI, prefixValue);
         } else {
             return new ElasticsearchWorkflowArchival(indexDAO, objectMapper);
         }

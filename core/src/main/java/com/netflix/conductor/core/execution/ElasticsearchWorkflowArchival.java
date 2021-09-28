@@ -21,8 +21,6 @@ import com.netflix.conductor.dao.IndexDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-
 public class ElasticsearchWorkflowArchival implements WorkflowArchiver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchWorkflowArchival.class);
@@ -33,7 +31,6 @@ public class ElasticsearchWorkflowArchival implements WorkflowArchiver {
     static final String ARCHIVED_FIELD = "archived";
     static final String RAW_JSON_FIELD = "rawJSON";
 
-    @Inject
     public ElasticsearchWorkflowArchival(IndexDAO indexDAO, ObjectMapper objectMapper) {
         this.indexDAO = indexDAO;
         this.objectMapper = objectMapper;

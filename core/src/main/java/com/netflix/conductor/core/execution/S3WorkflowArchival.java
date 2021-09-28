@@ -18,17 +18,10 @@ package com.netflix.conductor.core.execution;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.netflix.conductor.common.run.Workflow;
-import com.netflix.conductor.core.config.Configuration;
-import com.netflix.conductor.dao.ExecutionDAO;
-import com.netflix.conductor.dao.IndexDAO;
 import org.apache.bval.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-
-import javax.inject.Inject;
 
 public class S3WorkflowArchival implements WorkflowArchiver {
 
@@ -37,19 +30,20 @@ public class S3WorkflowArchival implements WorkflowArchiver {
     private final AmazonS3 s3Client;
     private final ObjectMapper objectMapper;
     private String bucketURI;
+    private final int prefixValue;
 
-    @Inject
-    public S3WorkflowArchival(AmazonS3 s3Client, ObjectMapper objectMapper, String bucketURI) {
+    public S3WorkflowArchival(AmazonS3 s3Client, ObjectMapper objectMapper, String bucketURI, int prefixValue) {
         this.s3Client = s3Client;
         this.objectMapper = objectMapper;
         this.bucketURI = bucketURI;
+        this.prefixValue = prefixValue;
     }
 
     @Override
     public void archiveWorkflow(Workflow workflow) {
 
         String fileName = workflow.getWorkflowId() + ".json";
-        String filePathPrefix = workflow.getWorkflowId().split("-")[0];
+        String filePathPrefix = workflow.getWorkflowId().substring(0, prefixValue);
         bucketURI = bucketURI.charAt(bucketURI.length() - 1) == '/' ? bucketURI + filePathPrefix: bucketURI + '/' + filePathPrefix;
 
         try {
