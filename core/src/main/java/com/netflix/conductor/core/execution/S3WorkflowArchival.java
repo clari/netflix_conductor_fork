@@ -60,7 +60,7 @@ public class S3WorkflowArchival implements WorkflowArchiver {
         }
     }
 
-    public String getWorkflow(String workflowId, String key) {
+    public String getArchivedWorkflow(String workflowId, String key) {
 
         String fileName = workflowId + ".json";
         String filePathPrefix = workflowId.substring(0, prefixValue);
