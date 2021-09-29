@@ -47,4 +47,9 @@ public class ElasticsearchWorkflowArchival implements WorkflowArchiver {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public String getWorkflow(String workflowInstanceId, String key) {
+        return indexDAO.get(workflowInstanceId, key);
+    }
 }

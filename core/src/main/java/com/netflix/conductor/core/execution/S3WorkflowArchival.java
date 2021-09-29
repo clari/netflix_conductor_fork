@@ -15,13 +15,18 @@
  */
 package com.netflix.conductor.core.execution;
 
+import com.amazonaws.util.IOUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
 import com.netflix.conductor.common.run.Workflow;
-import org.apache.bval.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.amazonaws.services.s3.AmazonS3;
+
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class S3WorkflowArchival implements WorkflowArchiver {
 
@@ -29,13 +34,13 @@ public class S3WorkflowArchival implements WorkflowArchiver {
 
     private final AmazonS3 s3Client;
     private final ObjectMapper objectMapper;
-    private String bucketURI;
+    private final String bucketURI;
     private final int prefixValue;
 
     public S3WorkflowArchival(AmazonS3 s3Client, ObjectMapper objectMapper, String bucketURI, int prefixValue) {
         this.s3Client = s3Client;
         this.objectMapper = objectMapper;
-        this.bucketURI = bucketURI;
+        this.bucketURI = bucketURI.charAt(bucketURI.length() - 1) == '/' ? bucketURI : bucketURI + '/';
         this.prefixValue = prefixValue;
     }
 
@@ -44,16 +49,34 @@ public class S3WorkflowArchival implements WorkflowArchiver {
 
         String fileName = workflow.getWorkflowId() + ".json";
         String filePathPrefix = workflow.getWorkflowId().substring(0, prefixValue);
-        bucketURI = bucketURI.charAt(bucketURI.length() - 1) == '/' ? bucketURI + filePathPrefix: bucketURI + '/' + filePathPrefix;
+        String location = bucketURI + filePathPrefix;
 
         try {
-            Preconditions.checkArgument(StringUtils.isNotBlank(bucketURI), "S3 bucket URI cannot be blank");
             // Upload workflow as a json file to s3
-            s3Client.putObject(bucketURI, fileName, objectMapper.writeValueAsString(workflow));
-            LOGGER.info("Successfully archived workflow {} to S3 bucket {} as file {}", workflow.getWorkflowId(), bucketURI, fileName);
+            s3Client.putObject(location, fileName, objectMapper.writeValueAsString(workflow));
+            LOGGER.info("Successfully archived workflow {} to S3 bucket {} as file {}", workflow.getWorkflowId(), location, fileName);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public String getWorkflow(String workflowId, String key) {
+
+        String fileName = workflowId + ".json";
+        String filePathPrefix = workflowId.substring(0, prefixValue);
+        String location = bucketURI + filePathPrefix;
+
+        try (InputStream is = s3Client.getObject(location, fileName).getObjectContent()) {
+            String content = IOUtils.toString(is);
+            if (key.isEmpty()) {
+                return content;
+            }
+            Map<String, String> reconstructedUtilMap = Arrays.stream(content.split(","))
+                    .map(s -> s.split("="))
+                    .collect(Collectors.toMap(s -> s[0], s -> s[1]));
+            return reconstructedUtilMap.getOrDefault(key, null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

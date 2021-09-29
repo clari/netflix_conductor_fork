@@ -124,7 +124,7 @@ public class ExecutionDAOFacade {
         Workflow workflow = executionDAO.getWorkflow(workflowId, includeTasks);
         if (workflow == null) {
             LOGGER.debug("Workflow {} not found in executionDAO, checking indexDAO", workflowId);
-            String json = indexDAO.get(workflowId, RAW_JSON_FIELD);
+            String json = workflowArchiver.getWorkflow(workflowId, RAW_JSON_FIELD);
             if (json == null) {
                 String errorMsg = String.format("No such workflow found by id: %s", workflowId);
                 LOGGER.error(errorMsg);
@@ -274,7 +274,7 @@ public class ExecutionDAOFacade {
                 // Only allow archival if workflow is in terminal state
                 // DO NOT archive async, since if archival errors out, workflow data will be lost
                 // Only archive unsuccessful workflows if enabled
-                if (!config.isArchiveUnsuccessfulOnlyEnabled() || !workflow.getStatus().isSuccessful()) {
+                if (!config.shouldArhivelOnlyUnsuccessfulWorkflows() || !workflow.getStatus().isSuccessful()) {
                     workflowArchiver.archiveWorkflow(workflow);
                 }
             } else {

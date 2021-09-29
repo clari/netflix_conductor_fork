@@ -137,8 +137,8 @@ public interface Configuration {
     String S3_ARCHIVAL_BUCKET_URI_PROPERTY_NAME = "workflow.s3.archive.uri";
     String S3_ARCHIVAL_BUCKET_URI_DEFAULT_VALUE = "";
 
-    String S3_ARCHIVAL_BUCKET_PREFIX_PROPERTY_NAME = "workflow.s3.archive.uri.prefix";
-    int S3_ARCHIVAL_BUCKET_PREFIX_DEFAULT_VALUE = 8;
+    String S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_PROPERTY_NAME = "workflow.s3.archive.uri.prefix";
+    int S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_DEFAULT_VALUE = 8;
 
     String ARCHIVE_UNSUCCESSFUL_ONLY_PROPERTY_NAME = "workflow.archive.unsuccessful.only";
     boolean ARCHIVE_UNSUCCESSFUL_ONLY_DEFAULT_VALUE = false;
@@ -184,7 +184,7 @@ public interface Configuration {
     /**
      * @return if true(not default), archives only unsuccessful workflows
      */
-    default boolean isArchiveUnsuccessfulOnlyEnabled() {
+    default boolean shouldArhivelOnlyUnsuccessfulWorkflows() {
         return getBooleanProperty(ARCHIVE_UNSUCCESSFUL_ONLY_PROPERTY_NAME, ARCHIVE_UNSUCCESSFUL_ONLY_DEFAULT_VALUE);
     }
 
@@ -199,7 +199,7 @@ public interface Configuration {
      * @return the number of characters of a workflow's ID to use as a prefix the S3 archive bucket, defaults to 8
      */
     default int getS3ArchivalBucketURIPrefix() {
-        return getIntProperty(S3_ARCHIVAL_BUCKET_PREFIX_PROPERTY_NAME, S3_ARCHIVAL_BUCKET_PREFIX_DEFAULT_VALUE);
+        return getIntProperty(S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_PROPERTY_NAME, S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_DEFAULT_VALUE);
     }
 
     /**

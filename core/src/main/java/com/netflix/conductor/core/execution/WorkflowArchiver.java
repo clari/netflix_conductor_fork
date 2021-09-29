@@ -20,8 +20,16 @@ import com.netflix.conductor.common.run.Workflow;
 public interface WorkflowArchiver {
 
     /**
-     *
+     * method to archive workflow to Elasticsearch or S3
      * @param workflow The workflow to be archived
      */
     void archiveWorkflow(Workflow workflow);
+
+    /**
+     * Retrieves a specific field from the index
+     * @param workflowInstanceId id of the workflow
+     * @param key field to be retrieved
+     * @return value of the field as string
+     */
+    String getWorkflow(String workflowInstanceId, String key);
 }
