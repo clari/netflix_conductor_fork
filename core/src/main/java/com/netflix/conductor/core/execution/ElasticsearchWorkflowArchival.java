@@ -49,7 +49,7 @@ public class ElasticsearchWorkflowArchival implements WorkflowArchiver {
     }
 
     @Override
-    public String getArchivedWorkflow(String workflowId, String key) {
-        return indexDAO.get(workflowId, key);
+    public String getArchivedWorkflow(String workflowId) {
+        return indexDAO.get(workflowId, RAW_JSON_FIELD);
     }
 }

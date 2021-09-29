@@ -124,7 +124,7 @@ public class ExecutionDAOFacade {
         Workflow workflow = executionDAO.getWorkflow(workflowId, includeTasks);
         if (workflow == null) {
             LOGGER.debug("Workflow {} not found in executionDAO, checking indexDAO", workflowId);
-            String json = workflowArchiver.getArchivedWorkflow(workflowId, RAW_JSON_FIELD);
+            String json = workflowArchiver.getArchivedWorkflow(workflowId);
             if (json == null) {
                 String errorMsg = String.format("No such workflow found by id: %s", workflowId);
                 LOGGER.error(errorMsg);

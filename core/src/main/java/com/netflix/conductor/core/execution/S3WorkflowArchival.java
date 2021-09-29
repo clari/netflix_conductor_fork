@@ -60,21 +60,14 @@ public class S3WorkflowArchival implements WorkflowArchiver {
         }
     }
 
-    public String getArchivedWorkflow(String workflowId, String key) {
+    public String getArchivedWorkflow(String workflowId) {
 
         String fileName = workflowId + ".json";
         String filePathPrefix = workflowId.substring(0, prefixValue);
         String location = bucketURI + filePathPrefix;
 
         try (InputStream is = s3Client.getObject(location, fileName).getObjectContent()) {
-            String content = IOUtils.toString(is);
-            if (key.isEmpty()) {
-                return content;
-            }
-            Map<String, String> reconstructedUtilMap = Arrays.stream(content.split(","))
-                    .map(s -> s.split("="))
-                    .collect(Collectors.toMap(s -> s[0], s -> s[1]));
-            return reconstructedUtilMap.getOrDefault(key, null);
+            return IOUtils.toString(is);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
