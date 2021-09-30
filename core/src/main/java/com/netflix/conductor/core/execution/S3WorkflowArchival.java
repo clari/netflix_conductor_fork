@@ -49,12 +49,12 @@ public class S3WorkflowArchival implements WorkflowArchiver {
 
         String fileName = workflow.getWorkflowId() + ".json";
         String filePathPrefix = workflow.getWorkflowId().substring(0, prefixValue);
-        String location = bucketURI + filePathPrefix;
+        String fullFilePath = filePathPrefix + '/' + fileName;
 
         try {
             // Upload workflow as a json file to s3
-            s3Client.putObject(location, fileName, objectMapper.writeValueAsString(workflow));
-            LOGGER.info("Successfully archived workflow {} to S3 bucket {} as file {}", workflow.getWorkflowId(), location, fileName);
+            s3Client.putObject(bucketURI, fullFilePath, objectMapper.writeValueAsString(workflow));
+            LOGGER.info("Successfully archived workflow {} to S3 bucket {} as file {}", workflow.getWorkflowId(), bucketURI, fullFilePath);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -64,9 +64,9 @@ public class S3WorkflowArchival implements WorkflowArchiver {
 
         String fileName = workflowId + ".json";
         String filePathPrefix = workflowId.substring(0, prefixValue);
-        String location = bucketURI + filePathPrefix;
+        String fullFilePath = filePathPrefix + '/' + fileName;
 
-        try (InputStream is = s3Client.getObject(location, fileName).getObjectContent()) {
+        try (InputStream is = s3Client.getObject(bucketURI, fullFilePath).getObjectContent()) {
             return IOUtils.toString(is);
         } catch (Exception e) {
             throw new RuntimeException(e);
