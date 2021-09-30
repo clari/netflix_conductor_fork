@@ -40,7 +40,7 @@ public class S3WorkflowArchival implements WorkflowArchiver {
     public S3WorkflowArchival(AmazonS3 s3Client, ObjectMapper objectMapper, String bucketURI, int prefixValue) {
         this.s3Client = s3Client;
         this.objectMapper = objectMapper;
-        this.bucketURI = bucketURI.charAt(bucketURI.length() - 1) == '/' ? bucketURI : bucketURI + '/';
+        this.bucketURI = bucketURI;
         this.prefixValue = prefixValue;
     }
 
@@ -49,7 +49,7 @@ public class S3WorkflowArchival implements WorkflowArchiver {
 
         String fileName = workflow.getWorkflowId() + ".json";
         String filePathPrefix = workflow.getWorkflowId().substring(0, prefixValue);
-        String fullFilePath = filePathPrefix + '/' + fileName;
+        String fullFilePath = "tmp/" + filePathPrefix + '/' + fileName;
 
         try {
             // Upload workflow as a json file to s3
@@ -64,7 +64,7 @@ public class S3WorkflowArchival implements WorkflowArchiver {
 
         String fileName = workflowId + ".json";
         String filePathPrefix = workflowId.substring(0, prefixValue);
-        String fullFilePath = filePathPrefix + '/' + fileName;
+        String fullFilePath = "tmp/" + filePathPrefix + '/' + fileName;
 
         try (InputStream is = s3Client.getObject(bucketURI, fullFilePath).getObjectContent()) {
             return IOUtils.toString(is);
