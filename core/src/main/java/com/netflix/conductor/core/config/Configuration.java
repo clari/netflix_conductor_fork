@@ -134,8 +134,8 @@ public interface Configuration {
     String WORKFLOW_ARCHIVAL_TYPE_PROPERTY_NAME = "workflow.archival.type";
     ArchivalType WORKFLOW_ARCHIVAL_TYPE_DEFAULT_VALUE = ArchivalType.ELASTICSEARCH;
 
-    String S3_ARCHIVAL_BUCKET_URI_PROPERTY_NAME = "workflow.s3.archive.uri";
-    String S3_ARCHIVAL_BUCKET_URI_DEFAULT_VALUE = "";
+    String S3_ARCHIVAL_BUCKET_NAME_PROPERTY_NAME = "workflow.s3.archive.bucket.name";
+    String S3_ARCHIVAL_BUCKET_NAME_DEFAULT_VALUE = "";
 
     String S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_PROPERTY_NAME = "workflow.s3.archive.uri.prefix";
     int S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_DEFAULT_VALUE = 8;
@@ -189,16 +189,16 @@ public interface Configuration {
     }
 
     /**
-     * @return S3 bucket URI
+     * @return S3 bucket name
      */
-    default String getS3ArchivalBucketURI() {
-        return getProperty(S3_ARCHIVAL_BUCKET_URI_PROPERTY_NAME, S3_ARCHIVAL_BUCKET_URI_DEFAULT_VALUE);
+    default String getS3ArchivalBucketName() {
+        return getProperty(S3_ARCHIVAL_BUCKET_NAME_PROPERTY_NAME, S3_ARCHIVAL_BUCKET_NAME_DEFAULT_VALUE);
     }
 
     /**
-     * @return the number of characters of a workflow's ID to use as a prefix the S3 archive bucket, defaults to 8
+     * @return the number of characters of a workflow's ID to use as a prefix for the file's location, defaults to 8
      */
-    default int getS3ArchivalBucketURIPrefix() {
+    default int getS3ArchivalLocationPrefix() {
         return getIntProperty(S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_PROPERTY_NAME, S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_DEFAULT_VALUE);
     }
 

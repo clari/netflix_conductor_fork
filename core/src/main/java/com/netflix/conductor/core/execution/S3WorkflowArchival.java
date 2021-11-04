@@ -23,10 +23,6 @@ import org.slf4j.LoggerFactory;
 import com.amazonaws.services.s3.AmazonS3;
 
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class S3WorkflowArchival implements WorkflowArchiver {
 
@@ -34,13 +30,13 @@ public class S3WorkflowArchival implements WorkflowArchiver {
 
     private final AmazonS3 s3Client;
     private final ObjectMapper objectMapper;
-    private final String bucketURI;
+    private final String bucketName;
     private final int prefixValue;
 
-    public S3WorkflowArchival(AmazonS3 s3Client, ObjectMapper objectMapper, String bucketURI, int prefixValue) {
+    public S3WorkflowArchival(AmazonS3 s3Client, ObjectMapper objectMapper, String bucketName, int prefixValue) {
         this.s3Client = s3Client;
         this.objectMapper = objectMapper;
-        this.bucketURI = bucketURI;
+        this.bucketName = bucketName;
         this.prefixValue = prefixValue;
     }
 
@@ -53,8 +49,8 @@ public class S3WorkflowArchival implements WorkflowArchiver {
 
         try {
             // Upload workflow as a json file to s3
-            s3Client.putObject(bucketURI, fullFilePath, objectMapper.writeValueAsString(workflow));
-            LOGGER.info("Successfully archived workflow {} to S3 bucket {} as file {}", workflow.getWorkflowId(), bucketURI, fullFilePath);
+            s3Client.putObject(bucketName, fullFilePath, objectMapper.writeValueAsString(workflow));
+            LOGGER.info("Successfully archived workflow {} to S3 bucket {} as file {}", workflow.getWorkflowId(), bucketName, fullFilePath);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -63,10 +59,9 @@ public class S3WorkflowArchival implements WorkflowArchiver {
     public String getArchivedWorkflow(String workflowId) {
 
         String fileName = workflowId + ".json";
-        String filePathPrefix = workflowId.substring(0, prefixValue);
-        String fullFilePath = "tmp/" + filePathPrefix + '/' + fileName;
+        String fullFilePath = workflowId.substring(0, prefixValue) + '/' + fileName;
 
-        try (InputStream is = s3Client.getObject(bucketURI, fullFilePath).getObjectContent()) {
+        try (InputStream is = s3Client.getObject(bucketName, fullFilePath).getObjectContent()) {
             return IOUtils.toString(is);
         } catch (Exception e) {
             throw new RuntimeException(e);
