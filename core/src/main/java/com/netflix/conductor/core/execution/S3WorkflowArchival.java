@@ -45,7 +45,7 @@ public class S3WorkflowArchival implements WorkflowArchiver {
 
         String fileName = workflow.getWorkflowId() + ".json";
         String filePathPrefix = workflow.getWorkflowId().substring(0, prefixValue);
-        String fullFilePath = "tmp/" + filePathPrefix + '/' + fileName;
+        String fullFilePath = filePathPrefix + '/' + fileName;
 
         try {
             // Upload workflow as a json file to s3
