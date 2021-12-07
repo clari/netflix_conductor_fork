@@ -12,6 +12,7 @@
  */
 package com.netflix.conductor.core.config;
 
+import com.google.common.base.Strings;
 import com.google.inject.AbstractModule;
 import java.util.List;
 import java.util.Map;
@@ -35,13 +36,13 @@ public interface Configuration {
     String DISABLE_ASYNC_WORKERS_DEFAULT_VALUE = "false";
 
     String SYSTEM_TASK_WORKER_THREAD_COUNT_PROPERTY_NAME = "workflow.system.task.worker.thread.count";
-    int SYSTEM_TASK_WORKER_THREAD_COUNT_DEFAULT_VALUE = 10;
+    int SYSTEM_TASK_WORKER_THREAD_COUNT_DEFAULT_VALUE = 400;
 
     String SYSTEM_TASK_WORKER_CALLBACK_SECONDS_PROPERTY_NAME = "workflow.system.task.worker.callback.seconds";
     int SYSTEM_TASK_WORKER_CALLBACK_SECONDS_DEFAULT_VALUE = 30;
 
     String SYSTEM_TASK_WORKER_POLL_INTERVAL_PROPERTY_NAME = "workflow.system.task.worker.poll.interval";
-    int SYSTEM_TASK_WORKER_POLL_INTERVAL_DEFAULT_VALUE = 50;
+    int SYSTEM_TASK_WORKER_POLL_INTERVAL_DEFAULT_VALUE = 30;
 
     String SYSTEM_TASK_WORKER_EXECUTION_NAMESPACE_PROPERTY_NAME = "workflow.system.task.worker.executionNameSpace";
     String SYSTEM_TASK_WORKER_EXECUTION_NAMESPACE_DEFAULT_VALUE = "";
@@ -50,7 +51,7 @@ public interface Configuration {
     int SYSTEM_TASK_WORKER_ISOLATED_THREAD_COUNT_DEFAULT_VALUE = 1;
 
     String SYSTEM_TASK_MAX_POLL_COUNT_PROPERTY_NAME = "workflow.system.task.queue.pollCount";
-    int SYSTEM_TASK_MAX_POLL_COUNT_DEFAULT_VALUE = 1;
+    int SYSTEM_TASK_MAX_POLL_COUNT_DEFAULT_VALUE = 25;
 
     String ENVIRONMENT_PROPERTY_NAME = "environment";
     String ENVIRONMENT_DEFAULT_VALUE = "test";
@@ -117,7 +118,7 @@ public interface Configuration {
     String WORKFLOW_ARCHIVAL_DELAY_SECS_PROPERTY_NAME = "workflow.archival.delay.seconds";
 
     String WORKFLOW_ARCHIVAL_DELAY_QUEUE_WORKER_THREAD_COUNT_PROPERTY_NAME = "workflow.archival.delay.queue.worker.thread.count";
-    int WORKFLOW_ARCHIVAL_DELAY_QUEUE_WORKER_THREAD_COUNT_DEFAULT_VALUE = 5;
+    int WORKFLOW_ARCHIVAL_DELAY_QUEUE_WORKER_THREAD_COUNT_DEFAULT_VALUE = 20;
 
     String OWNER_EMAIL_MANDATORY_NAME = "workflow.owner.email.mandatory";
     boolean OWNER_EMAIL_MANDATORY_DEFAULT_VALUE = true;
@@ -132,6 +133,22 @@ public interface Configuration {
 
     String WORKFLOW_REPAIR_SERVICE_ENABLED = "workflow.repairservice.enabled";
     boolean WORKFLOW_REPAIR_SERVICE_ENABLED_DEFAULT_VALUE = false;
+
+    String WORKFLOW_ARCHIVAL_TYPE_PROPERTY_NAME = "workflow.archival.type";
+    ArchivalType WORKFLOW_ARCHIVAL_TYPE_DEFAULT_VALUE = ArchivalType.ELASTICSEARCH;
+
+    String S3_ARCHIVAL_BUCKET_NAME_PROPERTY_NAME = "workflow.s3.archive.bucket.name";
+    String S3_ARCHIVAL_BUCKET_NAME_DEFAULT_VALUE = "";
+
+    String S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_PROPERTY_NAME = "workflow.s3.archive.uri.prefix";
+    int S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_DEFAULT_VALUE = 8;
+
+    String ARCHIVE_UNSUCCESSFUL_ONLY_PROPERTY_NAME = "workflow.archive.unsuccessful.only";
+    boolean ARCHIVE_UNSUCCESSFUL_ONLY_DEFAULT_VALUE = false;
+
+    enum ArchivalType {
+        ELASTICSEARCH, S3
+    }
 
     //TODO add constants for input/output external payload related properties.
 
@@ -153,6 +170,39 @@ public interface Configuration {
 
     default boolean ignoreLockingExceptions() {
         return getBooleanProperty(IGNORE_LOCKING_EXCEPTIONS_PROPERTY_NAME, IGNORE_LOCKING_EXCEPTIONS_DEFAULT_VALUE);
+    }
+
+    /**
+     * @return workflow arhival type of S3 or Elasticsearch. Defaults to Elasticsearch
+     */
+    default ArchivalType getWorkflowArchivalType() {
+        ArchivalType workflowArchivalType = WORKFLOW_ARCHIVAL_TYPE_DEFAULT_VALUE;
+        String archivalTypeConfig = getProperty(WORKFLOW_ARCHIVAL_TYPE_PROPERTY_NAME, "");
+        if (!Strings.isNullOrEmpty(archivalTypeConfig)) {
+            workflowArchivalType = ArchivalType.valueOf(archivalTypeConfig.toUpperCase());
+        }
+        return workflowArchivalType;
+    }
+
+    /**
+     * @return if true(not default), archives only unsuccessful workflows
+     */
+    default boolean shouldArhivelOnlyUnsuccessfulWorkflows() {
+        return getBooleanProperty(ARCHIVE_UNSUCCESSFUL_ONLY_PROPERTY_NAME, ARCHIVE_UNSUCCESSFUL_ONLY_DEFAULT_VALUE);
+    }
+
+    /**
+     * @return S3 bucket name
+     */
+    default String getS3ArchivalBucketName() {
+        return getProperty(S3_ARCHIVAL_BUCKET_NAME_PROPERTY_NAME, S3_ARCHIVAL_BUCKET_NAME_DEFAULT_VALUE);
+    }
+
+    /**
+     * @return the number of characters of a workflow's ID to use as a prefix for the file's location, defaults to 8
+     */
+    default int getS3ArchivalLocationPrefix() {
+        return getIntProperty(S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_PROPERTY_NAME, S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_DEFAULT_VALUE);
     }
 
     /**
@@ -300,6 +350,7 @@ public interface Configuration {
     default boolean getJerseyEnabled() {
         return getBooleanProperty(JERSEY_ENABLED_PROPERTY_NAME, JERSEY_ENABLED_DEFAULT_VALUE);
     }
+
 
     /**
      * @return true if owner email is mandatory for task definitions and workflow definitions
