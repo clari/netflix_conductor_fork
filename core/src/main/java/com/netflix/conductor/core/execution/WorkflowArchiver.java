@@ -26,9 +26,9 @@ public interface WorkflowArchiver {
     void archiveWorkflow(Workflow workflow);
 
     /**
-     * Retrieves a specific field from the index
+     * Retrieves archived workflow from Elasticsearch or S3
      * @param workflowId id of the workflow
-     * @return value of the field as string
+     * @return workflow data as string
      */
     String getArchivedWorkflow(String workflowId);
 }
