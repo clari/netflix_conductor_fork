@@ -28,6 +28,7 @@ import com.netflix.conductor.core.config.Configuration;
 import com.netflix.conductor.core.events.queue.Message;
 import com.netflix.conductor.core.execution.ApplicationException;
 import com.netflix.conductor.core.execution.ApplicationException.Code;
+import com.netflix.conductor.core.execution.WorkflowArchiver;
 import com.netflix.conductor.dao.ExecutionDAO;
 import com.netflix.conductor.dao.IndexDAO;
 import com.netflix.conductor.dao.PollDataDAO;
@@ -66,10 +67,11 @@ public class ExecutionDAOFacade {
     private final Configuration config;
 
     private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
+    private final WorkflowArchiver workflowArchiver;
 
     @Inject
     public ExecutionDAOFacade(ExecutionDAO executionDAO, QueueDAO queueDAO, IndexDAO indexDAO,
-        RateLimitingDAO rateLimitingDao, PollDataDAO pollDataDAO, ObjectMapper objectMapper, Configuration config) {
+                              RateLimitingDAO rateLimitingDao, PollDataDAO pollDataDAO, ObjectMapper objectMapper, Configuration config, WorkflowArchiver workflowArchiver) {
         this.executionDAO = executionDAO;
         this.queueDAO = queueDAO;
         this.indexDAO = indexDAO;
@@ -83,6 +85,7 @@ public class ExecutionDAOFacade {
             Monitors.recordDiscardedIndexingCount("delayQueue");
         });
         this.scheduledThreadPoolExecutor.setRemoveOnCancelPolicy(true);
+        this.workflowArchiver = workflowArchiver;
     }
 
     @PreDestroy
@@ -121,7 +124,7 @@ public class ExecutionDAOFacade {
         Workflow workflow = executionDAO.getWorkflow(workflowId, includeTasks);
         if (workflow == null) {
             LOGGER.debug("Workflow {} not found in executionDAO, checking indexDAO", workflowId);
-            String json = indexDAO.get(workflowId, RAW_JSON_FIELD);
+            String json = workflowArchiver.getArchivedWorkflow(workflowId);
             if (json == null) {
                 String errorMsg = String.format("No such workflow found by id: %s", workflowId);
                 LOGGER.error(errorMsg);
@@ -270,9 +273,10 @@ public class ExecutionDAOFacade {
             if (workflow.getStatus().isTerminal()) {
                 // Only allow archival if workflow is in terminal state
                 // DO NOT archive async, since if archival errors out, workflow data will be lost
-                indexDAO.updateWorkflow(workflow.getWorkflowId(),
-                        new String[]{RAW_JSON_FIELD, ARCHIVED_FIELD},
-                        new Object[]{objectMapper.writeValueAsString(workflow), true});
+                // Only archive unsuccessful workflows if enabled
+                if (!config.shouldArhivelOnlyUnsuccessfulWorkflows() || !workflow.getStatus().isSuccessful()) {
+                    workflowArchiver.archiveWorkflow(workflow);
+                }
             } else {
                 throw new ApplicationException(Code.INVALID_INPUT, String.format("Cannot archive workflow: %s with status: %s",
                         workflow.getWorkflowId(),

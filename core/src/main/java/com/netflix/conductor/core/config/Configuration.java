@@ -12,6 +12,7 @@
  */
 package com.netflix.conductor.core.config;
 
+import com.google.common.base.Strings;
 import com.google.inject.AbstractModule;
 import java.util.List;
 import java.util.Map;
@@ -130,6 +131,22 @@ public interface Configuration {
 
     String EVENT_QUEUE_POLL_SCHEDULER_THREAD_COUNT_PROPERTY_NAME = "workflow.event.queue.scheduler.poll.thread.count";
 
+    String WORKFLOW_ARCHIVAL_TYPE_PROPERTY_NAME = "workflow.archival.type";
+    ArchivalType WORKFLOW_ARCHIVAL_TYPE_DEFAULT_VALUE = ArchivalType.ELASTICSEARCH;
+
+    String S3_ARCHIVAL_BUCKET_NAME_PROPERTY_NAME = "workflow.s3.archive.bucket.name";
+    String S3_ARCHIVAL_BUCKET_NAME_DEFAULT_VALUE = "";
+
+    String S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_PROPERTY_NAME = "workflow.s3.archive.uri.prefix";
+    int S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_DEFAULT_VALUE = 8;
+
+    String ARCHIVE_UNSUCCESSFUL_ONLY_PROPERTY_NAME = "workflow.archive.unsuccessful.only";
+    boolean ARCHIVE_UNSUCCESSFUL_ONLY_DEFAULT_VALUE = false;
+
+    enum ArchivalType {
+        ELASTICSEARCH, S3
+    }
+
     //TODO add constants for input/output external payload related properties.
 
     default DB getDB() {
@@ -150,6 +167,39 @@ public interface Configuration {
 
     default boolean ignoreLockingExceptions() {
         return getBooleanProperty(IGNORE_LOCKING_EXCEPTIONS_PROPERTY_NAME, IGNORE_LOCKING_EXCEPTIONS_DEFAULT_VALUE);
+    }
+
+    /**
+     * @return workflow arhival type of S3 or Elasticsearch. Defaults to Elasticsearch
+     */
+    default ArchivalType getWorkflowArchivalType() {
+        ArchivalType workflowArchivalType = WORKFLOW_ARCHIVAL_TYPE_DEFAULT_VALUE;
+        String archivalTypeConfig = getProperty(WORKFLOW_ARCHIVAL_TYPE_PROPERTY_NAME, "");
+        if (!Strings.isNullOrEmpty(archivalTypeConfig)) {
+            workflowArchivalType = ArchivalType.valueOf(archivalTypeConfig.toUpperCase());
+        }
+        return workflowArchivalType;
+    }
+
+    /**
+     * @return if true(not default), archives only unsuccessful workflows
+     */
+    default boolean shouldArhivelOnlyUnsuccessfulWorkflows() {
+        return getBooleanProperty(ARCHIVE_UNSUCCESSFUL_ONLY_PROPERTY_NAME, ARCHIVE_UNSUCCESSFUL_ONLY_DEFAULT_VALUE);
+    }
+
+    /**
+     * @return S3 bucket name
+     */
+    default String getS3ArchivalBucketName() {
+        return getProperty(S3_ARCHIVAL_BUCKET_NAME_PROPERTY_NAME, S3_ARCHIVAL_BUCKET_NAME_DEFAULT_VALUE);
+    }
+
+    /**
+     * @return the number of characters of a workflow's ID to use as a prefix for the file's location, defaults to 8
+     */
+    default int getS3ArchivalLocationPrefix() {
+        return getIntProperty(S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_PROPERTY_NAME, S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_DEFAULT_VALUE);
     }
 
     /**
