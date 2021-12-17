@@ -355,14 +355,14 @@
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.eclipse.jetty:jetty-jmx": {
             "locked": "9.4.22.v20191022",
@@ -801,14 +801,14 @@
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.eclipse.jetty:jetty-jmx": {
             "locked": "9.4.22.v20191022",
@@ -1247,14 +1247,14 @@
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.eclipse.jetty:jetty-jmx": {
             "locked": "9.4.22.v20191022",
@@ -1693,14 +1693,14 @@
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.eclipse.jetty:jetty-jmx": {
             "locked": "9.4.22.v20191022",
@@ -2209,14 +2209,14 @@
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.eclipse.jetty:jetty-jmx": {
             "locked": "9.4.22.v20191022",
@@ -2655,14 +2655,14 @@
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.eclipse.jetty:jetty-jmx": {
             "locked": "9.4.22.v20191022",
@@ -3101,14 +3101,14 @@
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.eclipse.jetty:jetty-jmx": {
             "project": true,
@@ -3551,14 +3551,14 @@
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.eclipse.jetty:jetty-jmx": {
             "locked": "9.4.22.v20191022",
@@ -4005,14 +4005,14 @@
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.eclipse.jetty:jetty-jmx": {
             "locked": "9.4.22.v20191022",
@@ -4459,14 +4459,14 @@
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.eclipse.jetty:jetty-jmx": {
             "locked": "9.4.22.v20191022",
@@ -4913,14 +4913,14 @@
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence",
                 "com.netflix.conductor:conductor-es6-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.16.0"
         },
         "org.eclipse.jetty:jetty-jmx": {
             "locked": "9.4.22.v20191022",
