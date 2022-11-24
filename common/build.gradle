@@ -1,7 +1,6 @@
 buildscript {
     repositories {
         jcenter()
-        mavenCentral()
     }
     dependencies {
         classpath "com.github.vmg.protogen:protogen-codegen:${revProtogenCodegen}"
