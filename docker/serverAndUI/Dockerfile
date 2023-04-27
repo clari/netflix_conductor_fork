@@ -1,7 +1,7 @@
 #
 # conductor:serverAndUI - Netflix conductor server and UI
 #
-FROM openjdk:8-jdk
+FROM clarius.jfrog.io/clari-docker-v0-virtual/openjdk:8-jdk
 
 MAINTAINER Netflix OSS <conductor@netflix.com>
 

@@ -3,7 +3,7 @@
 #
 
 # 0. Builder stage
-FROM openjdk:8-jdk AS builder
+FROM clarius.jfrog.io/clari-docker-v0-virtual/openjdk:8-jdk AS builder
 
 MAINTAINER Netflix OSS <conductor@netflix.com>
 
@@ -15,7 +15,7 @@ WORKDIR /conductor
 RUN ./gradlew build -x test
 
 # 1. Bin stage
-FROM openjdk:8-jre-alpine
+FROM clarius.jfrog.io/clari-docker-v0-virtual/openjdk:8-jre-alpine
 
 MAINTAINER Netflix OSS <conductor@netflix.com>
 

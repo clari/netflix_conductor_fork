@@ -3,7 +3,7 @@ version: '3.1'
 services:
 
   postgresdb:
-    image: postgres
+    image: clarius.jfrog.io/clari-docker-v0-virtual/postgres
     restart: always
     ports:
     - "54320:5432"

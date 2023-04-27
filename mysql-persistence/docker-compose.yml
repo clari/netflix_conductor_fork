@@ -3,7 +3,7 @@ version: '3.1'
 services:
 
   mysqldb:
-    image: mysql
+    image: clarius.jfrog.io/clari-docker-v0-virtual/mysql
     restart: always
     ports:
     - "33307:3306"
