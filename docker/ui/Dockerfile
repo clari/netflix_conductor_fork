@@ -1,7 +1,7 @@
 #
 # conductor:ui - Netflix conductor UI
 #
-FROM node:9-alpine
+FROM clarius.jfrog.io/clari-docker-v0-virtual/node:9-alpine
 MAINTAINER Netflix OSS <conductor@netflix.com>
 
 # Install the required packages for the node build
