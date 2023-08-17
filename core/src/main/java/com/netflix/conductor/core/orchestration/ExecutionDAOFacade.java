@@ -274,7 +274,7 @@ public class ExecutionDAOFacade {
                 // Only allow archival if workflow is in terminal state
                 // DO NOT archive async, since if archival errors out, workflow data will be lost
                 // Only archive unsuccessful workflows if enabled
-                if (!config.shouldArhivelOnlyUnsuccessfulWorkflows() || !workflow.getStatus().isSuccessful()) {
+                if (!config.shouldArchivalOnlyUnsuccessfulWorkflows() || !workflow.getStatus().isSuccessful()) {
                     workflowArchiver.archiveWorkflow(workflow);
                 }
             } else {

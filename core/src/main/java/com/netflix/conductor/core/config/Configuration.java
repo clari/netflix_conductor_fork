@@ -141,7 +141,7 @@ public interface Configuration {
     int S3_ARCHIVAL_BUCKET_PREFIX_NUM_CHARACTERS_DEFAULT_VALUE = 8;
 
     String ARCHIVE_UNSUCCESSFUL_ONLY_PROPERTY_NAME = "workflow.archive.unsuccessful.only";
-    boolean ARCHIVE_UNSUCCESSFUL_ONLY_DEFAULT_VALUE = false;
+    boolean ARCHIVE_UNSUCCESSFUL_ONLY_DEFAULT_VALUE = true;
 
     enum ArchivalType {
         ELASTICSEARCH, S3
@@ -184,7 +184,7 @@ public interface Configuration {
     /**
      * @return if true(not default), archives only unsuccessful workflows
      */
-    default boolean shouldArhivelOnlyUnsuccessfulWorkflows() {
+    default boolean shouldArchivalOnlyUnsuccessfulWorkflows() {
         return getBooleanProperty(ARCHIVE_UNSUCCESSFUL_ONLY_PROPERTY_NAME, ARCHIVE_UNSUCCESSFUL_ONLY_DEFAULT_VALUE);
     }
 
